@@ -1,15 +1,27 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        Author autor1 = new Author("Ion Creanga", "Romana");
+        Author autor2 = new Author("Mihai Eminescu", "Romana");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        Book carte1 = new Book("Amintiri din copilarie", autor1);
+        Book carte2 = new Book("Luceafarul", autor2);
+        Book carte3 = new Book("Harap-Alb", autor1);
+
+        Library biblioteca = new Library("Biblioteca Centrala");
+        biblioteca.addBook(carte1);
+        biblioteca.addBook(carte2);
+        biblioteca.addBook(carte3);
+
+        biblioteca.showBooks();
+
+        System.out.println();
+        carte1.borrowItem();
+        carte1.borrowItem();
+
+        System.out.println();
+        carte1.returnItem();
+
+        System.out.println();
+        biblioteca.showBooks();
     }
 }
