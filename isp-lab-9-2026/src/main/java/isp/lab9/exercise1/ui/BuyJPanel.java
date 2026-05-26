@@ -38,7 +38,7 @@ public class BuyJPanel extends JPanel {
         costTextField.setEditable(false);
 
         JButton buyButton = new JButton("Buy");
-        // todo: add event listener to 'Buy' button
+        buyButton.addActionListener(e -> buyStocks(symbolComboBox, quantityTextField, costTextField, availableFundsTextField));
 
         JButton costButton = new JButton("Get cost");
         costButton.addActionListener(e ->
@@ -92,6 +92,47 @@ public class BuyJPanel extends JPanel {
                     ex.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(StockMarketJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void buyStocks(JComboBox<String> symbolComboBox, JTextField quantityTextField,
+                           JTextField costTextField, JTextField availableFundsTextField) {
+        try {
+            String symbol = (String) symbolComboBox.getSelectedItem();
+            int quantity = Integer.parseInt(quantityTextField.getText());
+
+            if (quantity <= 0) {
+                JOptionPane.showMessageDialog(this, "Quantity must be positive!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            BigDecimal price = mainFrame.getStockMarket().getStockPrice(symbol);
+            BigDecimal totalCost = price.multiply(new BigDecimal(quantity));
+            BigDecimal currentCash = mainFrame.getPortfolio().getCash();
+
+            if (totalCost.compareTo(currentCash) > 0) {
+                JOptionPane.showMessageDialog(this, "Not enough funds!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            mainFrame.getPortfolio().setCash(currentCash.subtract(totalCost));
+
+            java.util.Map<String, Integer> shares = mainFrame.getPortfolio().getShares();
+            if (shares.containsKey(symbol)) {
+                shares.put(symbol, shares.get(symbol) + quantity);
+            } else {
+                shares.put(symbol, quantity);
+            }
+
+            availableFundsTextField.setText(mainFrame.getPortfolio().getCash().toPlainString() + " $");
+
+            JOptionPane.showMessageDialog(this, "Bought " + quantity + " shares of " + symbol + " successfully!");
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid quantity value!", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(StockMarketJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
